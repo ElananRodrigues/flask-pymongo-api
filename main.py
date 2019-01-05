@@ -101,13 +101,17 @@ def getString(string, page):
 
 
 @app.route('/estudantes/page/<int:page>/search/all', methods=['GET'])
-def get(page):
+def errorPage(page):
 	try:
 		query = db.find({}).skip((page-1)*20).limit(20)
 		response = searchAll(query)
 		return response
 	except: 
 		return ["Nenhum dado encontrado"], 400
+
+@app.route('/estudantes/page/<int:page>/search/', methods=['GET'])
+def get(page):
+	return redirect('/estudantes/page/1/search/all')
 
 
 @app.route('/', methods=['GET'])
@@ -116,4 +120,4 @@ def index():
 	return urls(hosts)
 
 if __name__ == '__main__':
-	app.run(host="0.0.0.0",port=5000, debug=True)
+	app.run(host="0.0.0.0",port=5000)
