@@ -1,10 +1,30 @@
-from flask import request, url_for
+from flask import Flask, jsonify, request, url_for, redirect
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 from flask_api import FlaskAPI, status, exceptions
 
 app = FlaskAPI(__name__)
+
 db = MongoClient("mongodb://localhost:27017/")['base']['estudantes']
+
+err = {'count': 0,'response': "Nenhum dado encontrado"}
+
+def urls(hosts):
+
+	return ([{
+		"api":{
+				'page': hosts+'/estudantes/page/1/search/all',
+				'id': hosts+'/estudantes/id/5c30285fc34fcf2f31303a9c',
+				'search': {
+					'nome': hosts+'/estudantes/page/1/search/Alessandra',
+					'campus': hosts+'/estudantes/page/1/search/Aq',
+					'curso': hosts+'/estudantes/page/1/search/Computador',
+					'modalidade': hosts+'/estudantes/page/1/search/Presencial',
+					'municipio': hosts+'/estudantes/page/1/search/Aquidauana',
+					'nivel_do_curso': hosts+'/estudantes/page/1/search/Integrado'
+				}
+			}
+		}])
 
 def estudantes(string):
 	
@@ -27,8 +47,7 @@ def estudantes(string):
 def search(string):
 
 	response = estudantes(string)
-
-	return ({'response': response})
+	return jsonify({'response': response})
 
 
 def searchAll(query):
@@ -37,13 +56,16 @@ def searchAll(query):
 	pages = 0
 	response = []
 
-	for string in query:
-		response.append(estudantes(string))
+	if query.count() > 0:
+		for string in query:
+			response.append(estudantes(string))
 
-	count = query.count()
-	pages = int((count/20))
+		count = query.count()
+		pages = int((count/20))
 
-	return ({'count': count,'pages': pages,'response': response})
+		return jsonify({'count': count,'pages': pages,'response': response})
+	else:
+		return jsonify({'count': count,'pages': pages,'response': "Nenhum dado encontrado"})
 
 
 @app.route('/estudantes/id/<id>', methods=['GET'])
@@ -53,13 +75,12 @@ def getId(id):
 		response = search(query)
 		return response, 200
 	except:
-		return ["Nenhum dado encontrado"], 400
+		return jsonify(err), 400
 
 
 @app.route('/estudantes/page/<int:page>/search/<string>', methods=['GET'])
 def getString(string, page):
 
-	string = ''.join(c for c in string if c not in '?&:$"%!/;|()=`´')
 	try:
 		query = db.find({
 			"$or":  
@@ -73,39 +94,26 @@ def getString(string, page):
 			]
 		}).skip((page-1)*20).limit(20)
 
-		print(query)
-
 		response = searchAll(query)
 		return response, 200
 	except:
-		return ["Nenhum dado encontrado"], 400
+		return  jsonify(err), 400
 
 
-@app.route('/estudantes/page/<int:page>', methods=['GET'])
+@app.route('/estudantes/page/<int:page>/search/all', methods=['GET'])
 def get(page):
 	try:
 		query = db.find({}).skip((page-1)*20).limit(20)
 		response = searchAll(query)
 		return response
 	except: 
-		return []
+		return ["Nenhum dado encontrado"], 400
+
 
 @app.route('/', methods=['GET'])
 def index():
-
-	return {
-		'page': '/estudantes/page/1',
-		'id': '/estudantes/id/id',
-		'search': {
-			'nome': '/estudantes/page/1/search/ALESSANDRA',
-			'campus': '/estudantes/page/1/search/AQ',
-			'curso': '/estudantes/page/1/search/ESPECIALIZAÇÃO',
-			'modalidade': '/estudantes/page/1/search/PRESENCIAL',
-			'municipio': '/estudantes/page/1/search/Aquidauana',
-			'nivel_do_curso': '/estudantes/page/1/search/INTEGRADO'
-		}
-	}
-
+	hosts = request.host_url.rstrip('/')
+	return urls(hosts)
 
 if __name__ == '__main__':
 	app.run(host="0.0.0.0",port=5000, debug=True)

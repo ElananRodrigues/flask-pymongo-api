@@ -23,4 +23,4 @@ def import_content(filepath):
 
 if __name__ == "__main__":
   filepath = 'dataset_estudantes.csv'
-  import_content(filepath)
+  # import_content(filepath)
