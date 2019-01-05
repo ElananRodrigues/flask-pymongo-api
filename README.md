@@ -1,18 +1,29 @@
-# Rest Api Flask and PyMongo
+# Simple Api using FlaskAPI and MongoDB with PyMongo  
 
-## Running Examples
+### Installation
 
-To run exmaples, you need install Dependencies.
+First, you should [install MongoDB](https://docs.mongodb.com/manual/installation/)
 
-```sh
-# Install dependencies
-	pip install --requirement=requirements.txt --environment=venv --enable-site-packages
+then install all dependencies by run the following command:
+
+```
+$ sudo pip install -r requirements.txt
 ```
 
-and
+It will install Flask, FlaskAPI, and PyMongo.
 
-```sh
-# Run api 
-	python main.py
+### Usage
+
+To run the program, first you should make sure MongoDB is running, start it using:
+
+```
+$ sudo service mongod start
 ```
 
+then, run the program:
+
+```
+$ python run.py
+```
+
+Open your browser and go to `localhost:5000	` to see the running program.
