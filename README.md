@@ -27,3 +27,21 @@ $ python run.py
 ```
 
 Open your browser and go to `localhost:5000	` to see the running program.
+
+### Installation Production
+Install dependences
+```
+$ sudo yum install httpd mod_wsgi
+```
+
+For run in httpd use install.sh
+
+```
+$ sudo chmod u+x install.sh
+```
+
+Make install
+
+```
+$ sudo flask-pymongo-api/install.sh
+```
