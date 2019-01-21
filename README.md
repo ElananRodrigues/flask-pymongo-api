@@ -45,3 +45,10 @@ Make install
 ```
 $ sudo flask-pymongo-api/install.sh
 ```
+
+Docker production
+
+Running on http://0.0.0.0:5000/
+```
+$ docker-compose up
+```

@@ -1,30 +1,28 @@
 from flask_api import FlaskAPI, status, exceptions
-from api.views import getId, getString, getAll, urls, request, url_for, redirect
-
+from api.views import request, url_for, redirect, Api
 app = FlaskAPI(__name__)
 
-@app.route('/estudantes/user/id/<id>/', defaults=None)
-@app.route('/estudantes/user/id/<id>', methods=['GET'], defaults=None)
-def id(id):
-	return getId(id)
-
-@app.route('/estudantes/page/<int:page>/search/<string>/', defaults=None)
 @app.route('/estudantes/page/<int:page>/search/<string>', methods=['GET'], defaults=None)
-def string(string, page):
-	return getString(string, page)
+def get(string, page):
+	api = Api()
+	return api.find(string, page, request)
 
-@app.route('/estudantes/page/<int:page>/search/', methods=['GET'],defaults=None)
-def all(page):
-	return getAll(page)
+@app.route('/estudantes/create', methods=['GET','POST'], defaults=None)
+def post():
+	api = Api()
+	return api.create(request)
 
-@app.route('/<page>/<url>/<text>/', methods=['GET'], defaults=None)
-def notFound(page,url,text):
-	return redirect('/')
+@app.route('/estudantes/delete', methods=['GET','DELETE'], defaults=None)
+def drop():
+	api = Api()
+	return api.delete(request)
 
 @app.route('/', methods=['GET'], defaults=None)
 def index():
 	hosts = request.host_url.rstrip('/')
-	return urls(hosts)
+	api = Api()
+
+	return api.urls(hosts)
 
 
 if __name__ == '__main__':
